@@ -21,11 +21,12 @@ public class MainActivity extends PApplet  //PApplet in fact extends android.app
     	TextureManager.getInstance().setPApplet(this);
     	Processing.getInstance().setParent(this);
         Game.getInstance().init(this);
+        frameRate(24);
     }
 
     public void draw() 
     {
-       Processing.getInstance().getParent().background(0);
+       background(0);
        
        if(input == 1)
        {

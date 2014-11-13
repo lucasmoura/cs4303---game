@@ -1,5 +1,7 @@
 package com.game;
 
+import java.util.Random;
+
 import com.engine.GameObject;
 import com.engine.Processing;
 
@@ -9,29 +11,31 @@ public class Asteroid extends GameObject implements Enemy
 {
 	
 	private int speed;
+	private boolean alive;
+	private boolean explode;
+	private Explosion explosion;
 
 	public Asteroid(int x, int y, int objectWidth, int objectHeight,
 			String imagePath, String imageId, int numFrames) 
 	{
 		super(x, y, objectWidth, objectHeight, imagePath, imageId, numFrames);
 		
-		speed = 3;
-	}
-
-	@Override
-	public void move() {
-		// TODO Auto-generated method stub
+		explosion = new Explosion(0, 0, 0, 0, "explosion.png", "explosion", 17);
+	
+		Random rand = new Random();
+		PApplet pApplet = Processing.getInstance().getParent();
 		
-	}
-
-	@Override
-	public void shoot() {
-		// TODO Auto-generated method stub
+		setX(rand.nextInt(pApplet.width));
+		explosion.setX(getX());
 		
+		setCollidable("laser");
+		speed = 8;
+		alive = true;
+		explode = false;
 	}
 
 	@Override
-	public void update() 
+	public void move()
 	{
 		this.position.setY(this.position.getY()+speed);
 		PApplet applet = Processing.getInstance().getParent();
@@ -42,14 +46,59 @@ public class Asteroid extends GameObject implements Enemy
 			position.setY(0);
 		}
 		
-		int interval = 100;
+		int interval = 40;
 		currentRow = (applet.millis()/interval)%numFrames;
+		
+	}
+
+	@Override
+	public void shoot() 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() 
+	{
+		
+		
+		if(isColliding())
+		{
+			explode = true;
+			return;
+		}
+		
+		move();
 		
 	}
 	
 	public void drawObject()
 	{
-		super.drawObject();
+		if(!isColliding())
+			super.drawObject();	
+		else if(explode && alive)
+			explode();
+	}
+	
+	@Override
+	public boolean isAlive()
+	{
+		return alive;
+	}
+	
+	private void explode()
+	{
+		explosion.setX(getX());
+		explosion.setY(getY());
+		
+		if(!explosion.isOver())
+		{
+			explosion.update();
+			explosion.drawObject();
+		}	
+		else
+			alive = false;
 	}
 
 }

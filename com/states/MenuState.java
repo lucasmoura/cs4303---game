@@ -125,9 +125,9 @@ public class MenuState implements GameState
 	  public void mouseReleased(int x, int y)
 	  {
 		  
-		 Log.i(LOG_TAG, "Mene mouse released");
-		 Log.i(LOG_TAG, String.valueOf(playButton.touchOnMe(x, y)));
-		 Log.i(LOG_TAG, "x: "+x + ", y: "+y);
+//		 Log.i(LOG_TAG, "Mene mouse released");
+//		 Log.i(LOG_TAG, String.valueOf(playButton.touchOnMe(x, y)));
+//		 Log.i(LOG_TAG, "x: "+x + ", y: "+y);
 		
 	    if (playButton.touchOnMe(x, y))
 	    {

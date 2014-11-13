@@ -1,12 +1,18 @@
 package com.states;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import android.util.Log;
 
 import com.engine.Button;
+import com.engine.GameObject;
 import com.engine.Processing;
+import com.engine.QuadTree;
 import com.game.AdmiralShip;
-import com.game.Asteroid;
+import com.game.EnemySpawn;
 import com.game.Starfield;
+import com.game.Enemy;
 
 import processing.core.PApplet;
 
@@ -14,11 +20,14 @@ public class PlayState implements GameState
 {
 	
 	private Starfield starfield;
-	private Asteroid asteroid;
+	private ArrayList<GameObject> playObjects;
+	private ArrayList<GameObject> enemies;
+	private EnemySpawn spawn;
 	private final String playID = "PLAY";
 	private Button leftButton; 
 	private Button rightButton;
 	private AdmiralShip admiralShip;
+	private QuadTree quadTree;
 	
 	private String LOG_TAG = "PlayState";
 
@@ -26,23 +35,28 @@ public class PlayState implements GameState
 	public void update() 
 	{
 		
+		handleQuadTree();
+		
+		for (Iterator<GameObject> iterator = enemies.iterator(); iterator.hasNext();)
+		{
+			GameObject object = iterator.next();
+			
+		    if (!((Enemy) object).isAlive())
+		        iterator.remove();
+		    else
+		    	object.update();
+		}
 		
 		starfield.update();
-		asteroid.update();
+		
+		enemies.addAll(spawn.spawn(enemies.size()));
 		
 		if(rightButton.isPressed())
-		{
 			admiralShip.moveRight();
-			admiralShip.update();
-		}
-		
 		else if(leftButton.isPressed())
-		{
 			admiralShip.moveLeft();
-			admiralShip.update();
-		}
 		
-		
+		admiralShip.update();
 		
 	}
 
@@ -52,7 +66,10 @@ public class PlayState implements GameState
 		
 		starfield.drawObject();
 		admiralShip.drawObject();
-		asteroid.drawObject();
+		
+		for(GameObject enemy: enemies)
+			enemy.drawObject();
+		
 		leftButton.drawObject();
 		rightButton.drawObject();
 		
@@ -62,14 +79,12 @@ public class PlayState implements GameState
 	public boolean onEnter() 
 	{
 		PApplet applet = Processing.getInstance().getParent();
-		System.out.println("On enter");
+		playObjects = new ArrayList<GameObject>();
+		enemies = new ArrayList<GameObject>();
+		spawn = new EnemySpawn();
 		
 		starfield = new Starfield(20);
-		System.out.println("Starfield ready");
-		asteroid = new Asteroid(10, 0, 0, 0, "asteroidsMedium.png",
-				"mediumAsteroid", 16);
-		System.out.println("Asteroid ready");
-		
+		//System.out.println("Starfield ready");
 		rightButton = new Button(0, 0, "rightMove.png", "rightMove", 1, false);
 		int rightx = applet.width - rightButton.getWidth();
 		int righty = applet.height - rightButton.getHeight();
@@ -89,6 +104,10 @@ public class PlayState implements GameState
 		admiralShip.setX(shipx);
 		admiralShip.setY(shipy);
 		
+		quadTree = new QuadTree(0, 0, 0, applet.width, applet.height);
+		
+		playObjects.add(admiralShip);
+		
 		return true;
 	}
 
@@ -100,7 +119,53 @@ public class PlayState implements GameState
 		starfield = null;
 		return true;
 	}
+	
+	private void detectCollision()
+	{
+		ArrayList<GameObject> objects = new ArrayList<GameObject>();
+		ArrayList<GameObject> collision = new ArrayList<GameObject>();
+		
+		quadTree.getAllObjects(objects);
+		
+		for (int x = 0, len = objects.size(); x < len; x++)
+		{
+			collision.clear();
+			quadTree.retrieve(collision, objects.get(x));
+			
+			for (int y = 0, length = collision.size(); y < length; y++)
+			{
 
+				if ( objects.get(x).isCollidableWith(collision.get(y)) &&
+						objects.get(x).getX() < collision.get(y).getX() + collision.get(y).getWidth() &&
+					     objects.get(x).getX() + objects.get(x).getWidth()  > collision.get(y).getX() &&
+					     objects.get(x).getY() < collision.get(y).getY() + collision.get(y).getHeight() &&
+						 objects.get(x).getY() + objects.get(x).getHeight() > collision.get(y).getY()) 
+					{
+						
+						objects.get(x).setColliding(true);
+						collision.get(y).setColliding(true);
+					}
+				}
+			}
+	}
+	
+	private void handleQuadTree()
+	{
+		quadTree.clear();
+		
+		for(int i =0; i<enemies.size(); i++)
+			quadTree.insert(enemies.get(i));
+		
+		quadTree.insert(admiralShip);
+		
+		ArrayList<GameObject> bullets = admiralShip.getBulletPool().getPool();
+		
+		for(int i =0; i<bullets.size(); i++)
+			quadTree.insert(bullets.get(i));
+		
+		detectCollision();
+	}
+				
 	@Override
 	public void enable() {
 		// TODO Auto-generated method stub
@@ -126,7 +191,7 @@ public class PlayState implements GameState
 	{
 		 if(leftButton.touchOnMe(x, y))
 		 {
-			 System.out.println("Left pressed");
+			 //System.out.println("Left pressed");
 			 
 				if (leftButton.isPressed()==false) 
 				{
@@ -142,7 +207,7 @@ public class PlayState implements GameState
 		
 		 if(rightButton.touchOnMe(x, y))
 		 {
-			 System.out.println("Right pressed");
+			 //System.out.println("Right pressed");
 			 
 				if (rightButton.isPressed()==false) 
 				{
