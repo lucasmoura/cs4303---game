@@ -3,8 +3,6 @@ package com.game;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import com.engine.GameObject;
-
 public class BulletPool
 {
 	private int size;
@@ -16,18 +14,18 @@ public class BulletPool
 		bullets = new LinkedList<Bullet>();
 	}
 	
-	public boolean init()
+	public boolean init(String bulletType, String id, int type)
 	{
 		for(int i =0; i<size; i++)
 		{
-			Bullet bullet = new Bullet(0, 0, 0, 0, "laserBlue01.png", "laser",1);
+			Bullet bullet = new Bullet(0, 0, 0, 0, bulletType, id,1, type);
 			bullets.add(bullet);
 		}
 		
 		return true;
 	}
 	
-	public void getBullet(int x, int y, int speed)
+	public void getBullet(int x, int y, int speed, int damage)
 	{
 		
 		if(!bullets.getLast().isActive())
@@ -35,6 +33,7 @@ public class BulletPool
 			bullets.getLast().setX(x);
 			bullets.getLast().setY(y);
 			bullets.getLast().setSpeed(speed);
+			bullets.getLast().setDamageDealt(damage);
 			bullets.getLast().setActive(true);
 			
 			bullets.push(bullets.pollLast());
@@ -74,9 +73,9 @@ public class BulletPool
 		}
 	}
 	
-	public ArrayList<GameObject> getPool()
+	public ArrayList<DestructableObject> getPool()
 	{
-		ArrayList<GameObject> objects = new ArrayList<>();
+		ArrayList<DestructableObject> objects = new ArrayList<>();
 		for (int i = 0; i < size; i++) 
 		{
 			if (bullets.get(i).isActive())

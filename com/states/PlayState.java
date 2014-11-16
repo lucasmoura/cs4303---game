@@ -3,18 +3,17 @@ package com.states;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import android.util.Log;
-
 import com.engine.Button;
 import com.engine.GameObject;
 import com.engine.Processing;
 import com.engine.QuadTree;
 import com.game.AdmiralShip;
-import com.game.EnemyFactory;
+import com.game.DestructableObject;
+import com.game.EnemyBulletPool;
 import com.game.EnemySpawn;
-import com.game.Kodancwch;
 import com.game.Starfield;
 import com.game.Enemy;
+import com.game.PlayHUD;
 
 import processing.core.PApplet;
 
@@ -23,15 +22,14 @@ public class PlayState implements GameState
 	
 	private Starfield starfield;
 	private ArrayList<GameObject> playObjects;
-	private ArrayList<GameObject> enemies;
+	private ArrayList<DestructableObject> enemies;
 	private EnemySpawn spawn;
 	private final String playID = "PLAY";
 	private Button leftButton; 
 	private Button rightButton;
 	private AdmiralShip admiralShip;
 	private QuadTree quadTree;
-	
-	private String LOG_TAG = "PlayState";
+	private PlayHUD playHUD;
 
 	@Override
 	public void update() 
@@ -39,9 +37,9 @@ public class PlayState implements GameState
 		
 		handleQuadTree();
 		
-		for (Iterator<GameObject> iterator = enemies.iterator(); iterator.hasNext();)
+		for (Iterator<DestructableObject> iterator = enemies.iterator(); iterator.hasNext();)
 		{
-			GameObject object = iterator.next();
+			DestructableObject object = iterator.next();
 			
 		    if (!((Enemy) object).isAlive())
 		        iterator.remove();
@@ -58,7 +56,9 @@ public class PlayState implements GameState
 		else if(leftButton.isPressed())
 			admiralShip.moveLeft();
 		
+		EnemyBulletPool.getInstance().update();
 		admiralShip.update();
+		playHUD.update(admiralShip.getHealth(), 0);
 		
 	}
 
@@ -69,11 +69,16 @@ public class PlayState implements GameState
 		starfield.drawObject();
 		admiralShip.drawObject();
 		
-		for(GameObject enemy: enemies)
+		for(DestructableObject enemy: enemies)
 			enemy.drawObject();
 		
-		leftButton.drawObject();
-		rightButton.drawObject();
+		for(GameObject object: playObjects)
+			object.drawObject();
+		
+		for(DestructableObject bullet: EnemyBulletPool.getInstance().getPool())
+			bullet.drawObject();
+		
+		playHUD.drawObject();
 		
 	}
 
@@ -82,7 +87,7 @@ public class PlayState implements GameState
 	{
 		PApplet applet = Processing.getInstance().getParent();
 		playObjects = new ArrayList<GameObject>();
-		enemies = new ArrayList<GameObject>();
+		enemies = new ArrayList<DestructableObject>();
 		spawn = new EnemySpawn();
 		
 		//GameObject kodan = EnemyFactory.getInstance().createEnemy(Enemy.KODANCWCH);
@@ -107,10 +112,16 @@ public class PlayState implements GameState
 		int shipy = applet.height - admiralShip.getHeight();
 		admiralShip.setX(shipx);
 		admiralShip.setY(shipy);
+		admiralShip.setDamageDealt(1000);
+		admiralShip.setHealth(100);
+		
+		playHUD = new PlayHUD();
+		playHUD.init();
 		
 		quadTree = new QuadTree(0, 0, 0, applet.width, applet.height);
 		
-		playObjects.add(admiralShip);
+		playObjects.add(leftButton);
+		playObjects.add(rightButton);
 		//enemies.add(kodan);
 		
 		return true;
@@ -127,8 +138,8 @@ public class PlayState implements GameState
 	
 	private void detectCollision()
 	{
-		ArrayList<GameObject> objects = new ArrayList<GameObject>();
-		ArrayList<GameObject> collision = new ArrayList<GameObject>();
+		ArrayList<DestructableObject> objects = new ArrayList<DestructableObject>();
+		ArrayList<DestructableObject> collision = new ArrayList<DestructableObject>();
 		
 		quadTree.getAllObjects(objects);
 		
@@ -147,8 +158,8 @@ public class PlayState implements GameState
 						 objects.get(x).getY() + objects.get(x).getHeight() > collision.get(y).getY()) 
 					{
 						
-						objects.get(x).setColliding(collision.get(y).getDamage());
-						collision.get(y).setColliding(objects.get(x).getDamage());
+						objects.get(x).setColliding(true, collision.get(y).getDamageDealt());
+						collision.get(y).setColliding(true, objects.get(x).getDamageDealt());
 					}
 				}
 			}
@@ -163,7 +174,8 @@ public class PlayState implements GameState
 		
 		quadTree.insert(admiralShip);
 		
-		ArrayList<GameObject> bullets = admiralShip.getBulletPool().getPool();
+		ArrayList<DestructableObject> bullets = admiralShip.getBulletPool().getPool();
+		bullets.addAll(EnemyBulletPool.getInstance().getPool());
 		
 		for(int i =0; i<bullets.size(); i++)
 			quadTree.insert(bullets.get(i));

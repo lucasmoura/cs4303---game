@@ -1,22 +1,26 @@
 package com.game;
 
-import com.engine.GameObject;
+import com.engine.Processing;
 
-public class Bullet extends GameObject
+public class Bullet extends DestructableObject
 {
 	
 	private boolean active;
 	private boolean isInScreen;
 	private int speed;
+	private int type;
+	private int height;
 
 	public Bullet(int x, int y, int objectWidth, int objectHeight,
-			String imagePath, String imageId, int numFrames) 
+			String imagePath, String imageId, int numFrames, int type) 
 	{
 		super(x, y, objectWidth, objectHeight, imagePath, imageId, numFrames);
 		
 		active = isInScreen = false;
+		this.type = type;
 		setCollidable("asteroid");
 		speed = 0;
+		height = Processing.getInstance().getParent().displayHeight;
 	}
 
 	
@@ -34,12 +38,25 @@ public class Bullet extends GameObject
 			return;
 		}
 		
-		if(this.getY() - speed >= 0)
+		if(type == 0)
 		{
-			this.setY(this.getY() - speed);
+			if(this.getY() - speed >= 0)
+				this.setY(this.getY() - speed);
+			else
+				isInScreen = false;
 		}
 		else
-			isInScreen = false;
+		{
+			
+			if((this.position.getY() + speed) <= height)
+				this.position.setY(this.position.getY() + speed);
+			else
+			{
+//				System.out.println("Height: "+height+ ", Speed:  "+speed+" "+
+//							"Position: "+this.position.getY()+" "+(this.position.getY() + speed));
+				isInScreen = false;
+			}	
+		}
 		
 	}
 
@@ -78,7 +95,7 @@ public class Bullet extends GameObject
 
 	public void clear()
 	{
-		setColliding(false);
+		isColliding = false;
 		active = false;
 		setX(0);
 		setY(0);

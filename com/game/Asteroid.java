@@ -2,19 +2,17 @@ package com.game;
 
 import java.util.Random;
 
-import com.engine.GameObject;
 import com.engine.Processing;
 
 import processing.core.PApplet;
 
-public class Asteroid extends GameObject implements Enemy
+public class Asteroid extends DestructableObject implements Enemy
 {
 	
 	private int speed;
 	private boolean alive;
 	private boolean explode;
 	private Explosion explosion;
-	private int life;
 
 	public Asteroid(int x, int y, int objectWidth, int objectHeight,
 			String imagePath, String imageId, int numFrames) 
@@ -63,11 +61,21 @@ public class Asteroid extends GameObject implements Enemy
 	public void update() 
 	{
 		
+		if(explode)
+			return;
 		
 		if(isColliding())
 		{
-			explode = true;
-			return;
+			health -= damageReceived;
+			damageReceived = 0;
+			isColliding = false;
+			
+			if(health <= 0)
+			{
+				explode = true;
+				damageDealt = 0;
+				return;
+			}	
 		}
 		
 		move();
@@ -76,7 +84,7 @@ public class Asteroid extends GameObject implements Enemy
 	
 	public void drawObject()
 	{
-		if(!isColliding())
+		if(!explode && alive)
 			super.drawObject();	
 		else if(explode && alive)
 			explode();

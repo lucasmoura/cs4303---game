@@ -3,6 +3,8 @@ package com.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.game.DestructableObject;
+
 //http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 
 public class QuadTree
@@ -12,7 +14,7 @@ public class QuadTree
 	private int MAX_LEVELS = 5;
 	
 	private int level;
-	private List<GameObject> objects;
+	private List<DestructableObject> objects;
 	private int width;
 	private int height;
 	private int x;
@@ -22,7 +24,7 @@ public class QuadTree
 	public QuadTree(int level, int x, int y, int width, int height)
 	{
 		this.level = level;
-		objects = new ArrayList<GameObject>();
+		objects = new ArrayList<DestructableObject>();
 		this.width = width;
 		this.height = height;
 		nodes = new QuadTree[4];
@@ -73,7 +75,7 @@ public class QuadTree
 		   return index;
 	}
 	
-	 public void insert(GameObject object)
+	 public void insert(DestructableObject object)
 	 {
 		 
 		 
@@ -115,7 +117,8 @@ public class QuadTree
 		   
 	}
 	 
-	 public List<GameObject> retrieve(List<GameObject> returnObjects, GameObject object) 
+	 public List<DestructableObject> retrieve(List<DestructableObject> returnObjects,
+			 											DestructableObject object) 
 	 {
 		   int index = getIndex(object);
 		   
@@ -128,22 +131,22 @@ public class QuadTree
 		   return returnObjects;
 	 }
 	 
-	 public ArrayList<GameObject> getAllObjects(ArrayList<GameObject>returnedObjects)
+	 public ArrayList<DestructableObject> getAllObjects(ArrayList<DestructableObject> objects2)
 	 {
 		 	if(nodes[0] == null)
 		 	{
-		 		returnedObjects.addAll(objects);
-		 		return returnedObjects;
+		 		objects2.addAll(objects);
+		 		return objects2;
 		 	}	
 		 
 			for (int i = 0; i < this.nodes.length; i++)
-				this.nodes[i].getAllObjects(returnedObjects);
+				this.nodes[i].getAllObjects(objects2);
 			
 			
 			for (int i = 0, len = objects.size(); i < len; i++)
-				returnedObjects.add(objects.get(i));
+				objects2.add(objects.get(i));
 			
-			return returnedObjects;
+			return objects2;
 		}
 	 
 	

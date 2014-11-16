@@ -1,9 +1,6 @@
 package com.game;
 
-
-import com.engine.GameObject;
-
-public class AdmiralShip extends GameObject
+public class AdmiralShip extends DestructableObject
 {
 	
 	private boolean moveRight;
@@ -13,23 +10,36 @@ public class AdmiralShip extends GameObject
 	private BulletPool bulletPool;
 	private int counter;
 	private int fireRate;
+	private boolean alive;
+	private boolean explode;
+	private Explosion explosion;
 
 	public AdmiralShip(int x, int y, int objectWidth, int objectHeight,
 			String imagePath, String imageId, int numFrames)
 	{
 		super(x, y, objectWidth, objectHeight, imagePath, imageId, numFrames);
 		
-		moveLeft = moveRight = false;
+		moveLeft = moveRight = explode = false;
 		fireRate =3;
 		counter = fireRate;
 		bulletPool = new BulletPool(30);
-		bulletPool.init();
+		bulletPool.init("laserBlue01.png", "laser", 0);
+		
+		alive = true;
+		explosion = new Explosion(0, 0, 0, 0, "explosion.png", "explosion", 17);
+		setCollidable("mediumAsteroid");
+		setCollidable("enemyLaser");
 	}
 	
 	public void drawObject()
 	{
-		bulletPool.drawObject();
-		super.drawObject();
+		if(!explode && alive)
+		{
+			bulletPool.drawObject();
+			super.drawObject();
+		}
+		else if(explode && alive)
+			explode();
 		
 	}
 
@@ -38,6 +48,26 @@ public class AdmiralShip extends GameObject
 	{
 		
 		counter++;
+		
+		if(explode)
+			return;
+		
+		if(isColliding())
+		{
+			health -= damageReceived;
+			isColliding = false;
+			
+//			System.out.println("Health: "+health);
+//			System.out.println("Damage received: "+damageReceived);
+			damageReceived = 0;
+			
+			if(health <= 0)
+			{
+				health =0;
+				explode = true;
+				return;
+			}	
+		}
 		
 		if(moveRight)
 		{
@@ -63,7 +93,7 @@ public class AdmiralShip extends GameObject
 		if(counter>=fireRate)
 		{
 			//System.out.println("Shooting");
-			shoot();
+			//shoot();
 			counter=0;
 		}
 		
@@ -82,12 +112,26 @@ public class AdmiralShip extends GameObject
 	
 	private void shoot()
 	{
-		bulletPool.getBullet(getX()+37, getY()-this.getHeight()+30, 15);
+		bulletPool.getBullet(getX()+37, getY()-this.getHeight()+30, 15, 10);
 	}
 
 	public BulletPool getBulletPool()
 	{
 		return bulletPool;
+	}
+	
+	private void explode()
+	{
+		explosion.setX(getX());
+		explosion.setY(getY());
+		
+		if(!explosion.isOver())
+		{
+			explosion.update();
+			explosion.drawObject();
+		}	
+		else
+			alive = false;
 	}
 
 }

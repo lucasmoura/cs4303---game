@@ -4,10 +4,9 @@ import java.util.Random;
 
 import processing.core.PApplet;
 
-import com.engine.GameObject;
 import com.engine.Processing;
 
-public class Kodancwch extends GameObject implements Enemy 
+public class Kodancwch extends DestructableObject implements Enemy 
 {
 
 	private boolean reachedPosition;
@@ -21,6 +20,8 @@ public class Kodancwch extends GameObject implements Enemy
 	private boolean startRight;
 	private boolean explode;
 	private Explosion explosion;
+	private double fireChance;
+	private double percentFire;
 	
 	private final int NUMBER_OF_FIXED_POSITIONS = 3;
 	
@@ -45,13 +46,14 @@ public class Kodancwch extends GameObject implements Enemy
 		setCollidable("laser");
 		
 		numberOfTicks = 0;
+		percentFire = 0.1f;
 		explosion = new Explosion(0, 0, 0, 0, "explosion.png", "explosion", 17);
 		
 	}
 	
 	public void drawObject()
 	{
-		if(!isColliding())
+		if(!explode && alive)
 			super.drawObject();	
 		else if(explode && alive)
 			explode();
@@ -70,8 +72,7 @@ public class Kodancwch extends GameObject implements Enemy
 	@Override
 	public void shoot() 
 	{
-		// TODO Auto-generated method stub
-		
+		EnemyBulletPool.getInstance().getBullet(getX()+37, getY()+this.getHeight()+30, 15, 10);
 	}
 
 	@Override
@@ -83,11 +84,25 @@ public class Kodancwch extends GameObject implements Enemy
 	@Override
 	public void update() 
 	{
+		if(explode)
+			return;
+		
 		if(isColliding())
 		{
-			explode = true;
-			return;
+			health -= damageReceived;
+			damageReceived = 0;
+			isColliding = false;
+			
+			if(health <= 0)
+			{
+				explode = true;
+				return;
+			}	
 		}
+		
+		fireChance = Math.floor(Math.random()*101);
+		if (fireChance/100 < percentFire)
+			shoot();
 		
 		move();
 		

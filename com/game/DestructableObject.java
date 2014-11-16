@@ -1,0 +1,99 @@
+package com.game;
+
+import java.util.ArrayList;
+
+import com.engine.GameObject;
+
+public abstract class DestructableObject extends GameObject
+{
+	
+	protected int damageDealt;
+	protected int damageReceived;
+	protected int health;
+    private ArrayList<String> collidableWith;
+    protected boolean isColliding;
+
+	public DestructableObject(int x, int y, int objectWidth, int objectHeight,
+			String imagePath, String imageId, int numFrames) 
+	{
+		super(x, y, objectWidth, objectHeight, imagePath, imageId, numFrames);
+		
+		collidableWith = new ArrayList<String>();
+		damageDealt = damageReceived = 0;
+		health = 100;
+	}
+	
+
+	public abstract void update();
+	
+	public void drawObject()
+	{
+		super.drawObject();
+	}
+
+
+	public int getDamageDealt() 
+	{
+		return damageDealt;
+	}
+
+
+	public void setDamageDealt(int damageDealt)
+	{
+		this.damageDealt = damageDealt;
+	}
+
+
+	public int getHealth()
+	{
+		return health;
+	}
+
+
+	public void setHealth(int health) 
+	{
+		this.health = health;
+	}
+
+
+	public int getDamageReceived()
+	{
+		return damageReceived;
+	}
+
+
+	public void setDamageReceived(int damageReceived) 
+	{
+		this.damageReceived = damageReceived;
+	}
+	
+	public boolean isColliding() 
+	{
+		return isColliding;
+	}
+
+	public void setColliding(boolean isCollidable, int damageReceived) 
+	{
+		this.isColliding = isCollidable;
+		this.damageReceived = damageReceived;
+	} 
+	
+	public boolean isCollidableWith(GameObject object)
+	{
+		for(int i =0; i<collidableWith.size(); i++)
+		{
+			if(object.getImageId() == collidableWith.get(i))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public void setCollidable(String object)
+	{
+		collidableWith.add(object);
+	}
+	
+	
+	
+}

@@ -3,25 +3,23 @@ package com.game;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.engine.GameObject;
-
 public class EnemySpawn 
 {
 	
 	private long enemySpawnCooldown;
 	private float asteroidSpawnChance;
 	private float kodancwchSpawnChance;
-	private ArrayList<GameObject> enemies;
+	private ArrayList<DestructableObject> enemies;
 	
 	public EnemySpawn()
 	{
 		enemySpawnCooldown = 17;
 		asteroidSpawnChance = 80;
 		kodancwchSpawnChance = 130;
-		enemies = new ArrayList<GameObject>();
+		enemies = new ArrayList<DestructableObject>();
 	}
 	
-	public ArrayList<GameObject> spawn(int numEnemies)
+	public ArrayList<DestructableObject> spawn(int numEnemies)
 	{
 		enemies.clear();
 		

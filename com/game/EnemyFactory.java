@@ -2,7 +2,6 @@ package com.game;
 
 import java.util.Random;
 
-import com.engine.GameObject;
 import com.engine.Processing;
 
 public class EnemyFactory 
@@ -23,7 +22,7 @@ public class EnemyFactory
 		
 	}
 	
-	public GameObject createEnemy(int enemy)
+	public DestructableObject createEnemy(int enemy)
 	{
 		switch(enemy)
 		{
@@ -38,10 +37,13 @@ public class EnemyFactory
 		}
 	}
 	
-	private GameObject createAsteroid()
+	private DestructableObject createAsteroid()
 	{
-		GameObject asteroid = new Asteroid(0, 0, 0, 0, "asteroidsMedium.png",
+		DestructableObject asteroid = new Asteroid(0, 0, 0, 0, "asteroidsMedium.png",
 				"mediumAsteroid", 16);
+		
+		asteroid.setDamageDealt(30);
+		asteroid.setHealth(30);
 		
 		int width = Processing.getInstance().getParent().width;
 		
@@ -52,10 +54,13 @@ public class EnemyFactory
 		return asteroid;
 	}
 	
-	private GameObject createKodancwch()
+	private DestructableObject createKodancwch()
 	{
-		GameObject kodancwch = new Kodancwch(0, 0, 0, 0,
+		DestructableObject kodancwch = new Kodancwch(0, 0, 0, 0,
 				"enemyBlack1.png", "kodancwch", 1);
+		
+		kodancwch.setDamageDealt(0);
+		kodancwch.setHealth(100);
 		
 		int kodancwchx = -1;
 				

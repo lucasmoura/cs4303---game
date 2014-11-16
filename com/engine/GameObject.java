@@ -14,19 +14,14 @@ public abstract class GameObject
     protected int currentRow;
     protected int currentFrame;
     protected String imageId;
-    private String imagePath;
-    private ArrayList<String> collidableWith;
-    private boolean isColliding;
+
     
-    private final String LOG_TAG = "GameObject";
-  
     public GameObject(int x, int y, int objectWidth, int objectHeight, String imagePath, String imageId, int numFrames)
     {
       this.position = new Vector2D(x, y);
       this.objectWidth = objectWidth;
       this.objectHeight = objectHeight;
       this.imageId = imageId;
-      this.imagePath = imagePath;
       
       this.currentRow = 0;
       this.currentFrame = 0;
@@ -39,8 +34,6 @@ public abstract class GameObject
       
       if(objectWidth == 0)
     	  this.objectWidth = TextureManager.getInstance().getImage(imageId).width;
-      
-      collidableWith = new ArrayList<String>();
       
     }
     
@@ -57,7 +50,6 @@ public abstract class GameObject
     public void clean()
     {
       TextureManager.getInstance().clearFromTextureMap(imageId);
-      collidableWith = null;
     }  
     
     public void setPosition(int x, int y)
@@ -96,38 +88,10 @@ public abstract class GameObject
       return objectHeight;
     }
 
-	public boolean isColliding() 
-	{
-		return isColliding;
-	}
-
-	public void setColliding(int damage) 
-	{
-		this.isColliding = isColidable;
-	} 
-	
 	public String getImageId() {
 		return imageId;
 	}
 
-	public boolean isCollidableWith(GameObject object)
-	{
-		for(int i =0; i<collidableWith.size(); i++)
-		{
-			if(object.getImageId() == collidableWith.get(i))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public void setCollidable(String object)
-	{
-		collidableWith.add(object);
-	}
-	
-	
-    
     
 }
 
