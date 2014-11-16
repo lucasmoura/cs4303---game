@@ -1,6 +1,5 @@
 package com.game;
 
-import java.security.KeyStore.ProtectionParameter;
 import java.util.Random;
 
 import com.engine.GameObject;
@@ -55,15 +54,23 @@ public class EnemyFactory
 	
 	private GameObject createKodancwch()
 	{
-		GameObject kodancwch = new Asteroid(0, 0, 0, 0,
+		GameObject kodancwch = new Kodancwch(0, 0, 0, 0,
 				"enemyBlack1.png", "kodancwch", 1);
 		
-		int width = Processing.getInstance().getParent().width;
+		int kodancwchx = -1;
+				
+		if(new Random().nextInt(2)==0)
+		{
+			kodancwchx = 0;
+			((Kodancwch) kodancwch).setStart(true);
+		}	
+		else
+		{
+			kodancwchx = Processing.getInstance().getParent().width - kodancwch.getWidth();
+			((Kodancwch) kodancwch).setStart(false);
+		}	
 		
-		Random rand = new Random();
-		int asteroidx = rand.nextInt(width);
-		
-		kodancwch.setX(asteroidx);
+		kodancwch.setX(kodancwchx);
 		return kodancwch;
 		
 	}

@@ -101,7 +101,7 @@ public abstract class GameObject
 		return isColliding;
 	}
 
-	public void setColliding(boolean isColidable) 
+	public void setColliding(int damage) 
 	{
 		this.isColliding = isColidable;
 	} 

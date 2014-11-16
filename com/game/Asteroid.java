@@ -14,6 +14,7 @@ public class Asteroid extends GameObject implements Enemy
 	private boolean alive;
 	private boolean explode;
 	private Explosion explosion;
+	private int life;
 
 	public Asteroid(int x, int y, int objectWidth, int objectHeight,
 			String imagePath, String imageId, int numFrames) 

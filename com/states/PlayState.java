@@ -10,7 +10,9 @@ import com.engine.GameObject;
 import com.engine.Processing;
 import com.engine.QuadTree;
 import com.game.AdmiralShip;
+import com.game.EnemyFactory;
 import com.game.EnemySpawn;
+import com.game.Kodancwch;
 import com.game.Starfield;
 import com.game.Enemy;
 
@@ -83,6 +85,8 @@ public class PlayState implements GameState
 		enemies = new ArrayList<GameObject>();
 		spawn = new EnemySpawn();
 		
+		//GameObject kodan = EnemyFactory.getInstance().createEnemy(Enemy.KODANCWCH);
+		
 		starfield = new Starfield(20);
 		//System.out.println("Starfield ready");
 		rightButton = new Button(0, 0, "rightMove.png", "rightMove", 1, false);
@@ -107,6 +111,7 @@ public class PlayState implements GameState
 		quadTree = new QuadTree(0, 0, 0, applet.width, applet.height);
 		
 		playObjects.add(admiralShip);
+		//enemies.add(kodan);
 		
 		return true;
 	}
@@ -142,8 +147,8 @@ public class PlayState implements GameState
 						 objects.get(x).getY() + objects.get(x).getHeight() > collision.get(y).getY()) 
 					{
 						
-						objects.get(x).setColliding(true);
-						collision.get(y).setColliding(true);
+						objects.get(x).setColliding(collision.get(y).getDamage());
+						collision.get(y).setColliding(objects.get(x).getDamage());
 					}
 				}
 			}
