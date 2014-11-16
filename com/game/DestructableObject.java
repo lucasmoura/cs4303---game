@@ -12,6 +12,7 @@ public abstract class DestructableObject extends GameObject
 	protected int health;
     private ArrayList<String> collidableWith;
     protected boolean isColliding;
+    protected int points;
 
 	public DestructableObject(int x, int y, int objectWidth, int objectHeight,
 			String imagePath, String imageId, int numFrames) 
@@ -65,6 +66,11 @@ public abstract class DestructableObject extends GameObject
 	public void setDamageReceived(int damageReceived) 
 	{
 		this.damageReceived = damageReceived;
+	}
+	
+	public int getPoints()
+	{
+		return points;
 	}
 	
 	public boolean isColliding() 

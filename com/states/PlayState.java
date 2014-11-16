@@ -36,13 +36,17 @@ public class PlayState implements GameState
 	{
 		
 		handleQuadTree();
+		int score = 0;
 		
 		for (Iterator<DestructableObject> iterator = enemies.iterator(); iterator.hasNext();)
 		{
 			DestructableObject object = iterator.next();
 			
 		    if (!((Enemy) object).isAlive())
+		    {
+		    	score += object.getPoints();
 		        iterator.remove();
+		    } 
 		    else
 		    	object.update();
 		}
@@ -58,7 +62,7 @@ public class PlayState implements GameState
 		
 		EnemyBulletPool.getInstance().update();
 		admiralShip.update();
-		playHUD.update(admiralShip.getHealth(), 0);
+		playHUD.update(admiralShip.getHealth(), score);
 		
 	}
 

@@ -49,6 +49,8 @@ public class Kodancwch extends DestructableObject implements Enemy
 		percentFire = 0.1f;
 		explosion = new Explosion(0, 0, 0, 0, "explosion.png", "explosion", 17);
 		
+		points = 20;
+		
 	}
 	
 	public void drawObject()
@@ -186,6 +188,7 @@ public class Kodancwch extends DestructableObject implements Enemy
 		else
 			alive = false;
 	}
+	
 	
 
 }

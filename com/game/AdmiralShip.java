@@ -93,7 +93,7 @@ public class AdmiralShip extends DestructableObject
 		if(counter>=fireRate)
 		{
 			//System.out.println("Shooting");
-			//shoot();
+			shoot();
 			counter=0;
 		}
 		

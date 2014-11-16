@@ -31,6 +31,8 @@ public class Asteroid extends DestructableObject implements Enemy
 		speed = 8;
 		alive = true;
 		explode = false;
+		
+		points = 10;
 	}
 
 	@Override
